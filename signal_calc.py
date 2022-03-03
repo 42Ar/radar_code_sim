@@ -7,7 +7,7 @@ from scipy.fftpack import dct, fft
 import matplotlib.pyplot as plt
 
 
-mode = "strong_upper_reflectivity"
+mode = "spread"
 
 def gen_layer_ACF(t, h):
     if mode == "spread":
@@ -16,6 +16,17 @@ def gen_layer_ACF(t, h):
     elif mode == "strong_upper_reflectivity":
         amp = 0.02 if h == 0 else 1
         return amp*np.exp(-t)
+    elif mode == "strong_upper_reflectivity2":
+        amp = 0.2 if h == 0 else 1
+        width = 1 if h == 0 else 10
+        return amp*np.exp(-t/width)
+    elif mode == "strong_upper_reflectivity_zero_corr":
+        if h == 0:
+            return np.exp(-t)
+        else:
+            ACF = np.zeros(len(t))
+            ACF[0] = 10
+            return ACF
         
 def layer_generator(ACF):
     if method == "direct":
@@ -61,14 +72,14 @@ def calculate_ACFs(rng):
 
 if __name__ == "__main__":
     t = np.arange(n)
-    h = 1
+    h = 0
     acf = gen_layer_ACF(t, h)
     layer_gen = layer_generator(acf)
     M = 5
     samples = 10000
     rng = np.random.default_rng(45)
     r = calculate_ACFs(rng)
-    t_plot = np.linspace(0, M + 1, 100)
+    t_plot = np.linspace(0, M, 100)
     plt.plot(t_plot, gen_layer_ACF(t_plot, h), color="black", lw=1)
     plt.errorbar(np.arange(1, M + 1),
                  np.mean(r, axis=0),
