@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 from config import N, n, cc, M, samples, w, off, c
 import signal_calc as sig
 from scipy import linalg
+from scipy.stats import shapiro
+from matplotlib.lines import Line2D
 
-def doit(layer_gens, rng):
+
+def run_sim(layer_gens, rng):
     r = np.array([gen(rng) for gen in layer_gens])
     coded = r*np.tile(cc, N).reshape(r.shape)
     for i in range(1, N):
@@ -25,12 +28,12 @@ rng = np.random.default_rng(2)
 t = np.arange(n)
 acfs = [sig.gen_layer_ACF(t, i) for i in range(N)]
 layer_gens = [sig.layer_generator(acf) for acf in acfs]
-res = []
+sim_res = []
 for s in range(samples):  
-    res.append(doit(layer_gens, rng))
-res = np.array(res)
-mean = np.mean(res, axis=0)
-std = np.std(res, axis=0)/np.sqrt(samples)
+    sim_res.append(run_sim(layer_gens, rng))
+sim_res = np.array(sim_res)
+mean = np.mean(sim_res, axis=0)
+std = np.std(sim_res, axis=0)/np.sqrt(samples)
 x = np.arange(1, M + 1)
 t_plot = np.linspace(0, M)
 for h, (m, s) in enumerate(zip(mean, std)):
@@ -85,27 +88,32 @@ def fisher_matrix():
 F = fisher_matrix()
 F_inv = linalg.inv(F)
 
-theo_bound = sum(acf[0] for acf in acfs)/np.sqrt(2*len(cc))
-theo_bound_est = sum(acf[0] for acf in acfs)/np.sqrt(len(cc))
+#%%
 
-for h, (m, s) in enumerate(zip(mean, std)):
-    plt.plot(x, np.real(s), marker="x", ls="-", label=f"est. h={h}")
+colors = ["green", "brown", "blue", "orange", "grey", "darkblue"]
+lower_bound = sum(acf[0] for acf in acfs)/np.sqrt(w)
+lw=1.4
+for h, (m, s, color) in enumerate(zip(mean, std, colors)):
+    plt.plot(x, np.real(s), marker="x", ls="-", color=color, lw=lw)
     fisher_limit = [np.sqrt(F_inv[h*M + Delta - 1, h*M + Delta - 1]/samples) for Delta in range(1, M + 1)]
-    plt.plot(x, fisher_limit, marker="o", ls="--", label=f"theo. h={h}")
+    plt.plot(x, fisher_limit, marker="o", ls="--", color=color, lw=lw)
 plt.xlabel("lag index")
 plt.ylabel("standard deviation of power in a.u.")
-plt.legend()
-plt.axhline(theo_bound/np.sqrt(samples), label="cramer rao bound")
-plt.axhline(theo_bound_est/np.sqrt(samples), label="perefect code")
+limit = plt.axhline(lower_bound/np.sqrt(samples), lw=lw, label="infinite\nrandom\ncode", color="red")
+legend_elements = [Line2D([0], [0], color=c, lw=lw, label=f'h={h}') for h, c in enumerate(colors)]
+legend_elements.append(limit)
+legend_elements.append(Line2D([0], [0], color=colors[0], lw=lw, ls="-", marker="x", label='Monte-Carlo'))
+legend_elements.append(Line2D([0], [0], color=colors[0], lw=lw, ls="--", marker="o", label='Cramér–Rao'))
+plt.gca().legend(handles=legend_elements, loc='right')
+plt.xticks(range(1, M+1), [f" {i}" for i in range(1, M+1)])
 plt.savefig("code_normal_case.pdf")
 plt.show()
 
 
 #%%
 
-from scipy.stats import shapiro
 
-ds = [np.real(res[:, 0, 0]), np.real(res[:, 1, 0])]
+ds = [np.real(sim_res[:, 0, 0]), np.real(sim_res[:, 1, 0])]
 for d in ds:
     stat, p = shapiro(d)
     print(p)
