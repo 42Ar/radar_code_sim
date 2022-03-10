@@ -63,7 +63,7 @@ def fisher(k_i, k_j, Delta_i, Delta_j):
     # also square matrix of size len(c), located directly next to the first matrix
     b = np.sum(eps_LL[:,:-M]*sigma2_inv[len(c):2*len(c), 2*len(c):3*len(c)-M]*
                sigma2_inv[len(c)+Delta_i:2*len(c)+Delta_i, 2*len(c)+Delta_j:3*len(c)+Delta_j - M])
-    return (a + 2*b)*n/len(c)/2
+    return (a + 2*b)*w/len(c)/2
 
 def fisher_matrix():
     F = np.zeros((N*M, N*M))
