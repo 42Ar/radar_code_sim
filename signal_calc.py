@@ -62,7 +62,7 @@ def layer_generator(ACF):
             return np.correlate(full_T, c)
     return layer_gen
 
-def calculate_ACFs(rng):
+def calculate_ACFs(rng, layer_gen, samples, M):
     r = np.empty((samples, M))
     for i in range(samples):
         d = layer_gen(rng)
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     M = 5
     samples = 10000
     rng = np.random.default_rng(45)
-    r = calculate_ACFs(rng)
+    r = calculate_ACFs(rng, layer_gen, samples, M)
     t_plot = np.linspace(0, M, 100)
     plt.plot(t_plot, gen_layer_ACF(t_plot, h), color="black", lw=1)
     plt.errorbar(np.arange(1, M + 1),

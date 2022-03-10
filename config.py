@@ -14,13 +14,13 @@ import math
 
 # M = 5, N = 7
 c = [-1, +1, -1, -1, +1, +1, +1, +1, +1, +1, +1, +1, +1, -1, +1, +1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, +1, +1, +1, -1, +1, -1, -1, -1, -1, +1, +1, +1]
-w = 10*len(c)
+w = 30*len(c)
 off = len(c)
 n = off + w + len(c)
 N = 7
 M = 5
 cc = np.tile(c, math.ceil(n/len(c)))[:n]
-samples = 3000
+samples = 1000
 method="hybrid"
 K = 10  # where to cutoff the ACF when mode="hybrid"
 
