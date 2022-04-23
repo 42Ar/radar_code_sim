@@ -12,7 +12,7 @@ M = 4
 c = [-1, -1, -1, -1, +1, -1, +1, -1, +1, -1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, -1, +1, +1]
 g = [+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1]
 rx_per_pulse = 2*len(g)  # number of rx samples per pulse
-n_code_tx = 2000  # number of full code transmissions (number of pulses in units of len(c))
+n_code_tx = 20  # number of full code transmissions (number of pulses in units of len(c))
 n = (len(g) + rx_per_pulse - 1)*len(c)*n_code_tx  # total number of samples rx + tx
 off = len(c)  # offset in number of pulses
 w = (n_code_tx - 2)*len(c)  # number of pulses to process
@@ -26,11 +26,13 @@ K_corrected = 10*(len(g) + rx_per_pulse - 1)  # define greater K (ACF cutoff) as
 if gen_method == "uncorrelated":  # overlapping ranges gates are uncorrelated
     layers = np.zeros((layer_cnt, n), dtype=np.complex128)
     for h in range(layer_cnt):
+        print(f"{h + 1}/{layer_cnt}")
         acf = sig.gen_layer_ACF(t, h, layer_cnt)
         layers[h] = sig.layer_generator(acf, n, K_corrected)(rng)
 elif gen_method == "correlated_simple":  # average over two range gates to create correlation
     layers = np.zeros((layer_cnt + 1, n), dtype=np.complex128)
     for h in range(layer_cnt + 1):
+        print(f"{h + 1}/{layer_cnt + 1}")
         acf = sig.gen_layer_ACF(t, h, layer_cnt + 1)
         layers[h] = sig.layer_generator(acf, n, K_corrected)(rng)
     for h in range(layer_cnt):
@@ -40,9 +42,10 @@ elif gen_method == "correlated_symmetric":  # generates one signal for each half
     layers = np.zeros((layer_cnt*2, n*2), dtype=np.complex128)
     t = np.arange(2*n)/(len(g) + rx_per_pulse - 1)/2
     for h in range(layer_cnt*2):
+        print(f"{h + 1}/{layer_cnt*2}")
         acf = sig.gen_layer_ACF(t, h, layer_cnt*2)
         layers[h] = sig.layer_generator(acf, 2*n, K_corrected*2)(rng)
-    for layers in range(layer_cnt):
+    for h in range(layer_cnt):
         layers[h, :n] = (layers[2*h, ::2] + layers[2*h + 1, 1::2])/np.sqrt(2)
     layers = layers[:layer_cnt, :n]
 
