@@ -25,7 +25,7 @@ def to_phase(i):
 
 code_utils.full_code_check(c, N, M)
 code_utils.check_good_modulation_code(g)
-file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code.tlan", "w")
+file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.tlan", "w")
 pulse_len = lag_step*max_duty_cycle
 baud_len_us = pulse_len*1e6/len(g)
 baud_len_us = int(baud_len_us*10)/10
@@ -73,6 +73,7 @@ for ci, cc in enumerate(c):
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us}\tCH2,CH5\n")
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us}\tALLOFF\n")
     file.write("\n")
+file.write(f"AT\t{lag_step*len(c)*1e6:.1f}\tREP\n\n")
 file.close()
 range_gate_height = baud_len_us*consts.c*1e-6
 print(f"resulting pulse length: {baud_len_us*len(g):.5g}us")
