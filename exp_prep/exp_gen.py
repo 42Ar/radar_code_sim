@@ -18,9 +18,9 @@ g = [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1]
 
 def to_phase(i):
     if i == 1:
-        return "PHASE0"
+        return "PHA0"
     if i == -1:
-        return "PHASE180"
+        return "PHA180"
     raise ValueError()
 
 code_utils.full_code_check(c, N, M)
