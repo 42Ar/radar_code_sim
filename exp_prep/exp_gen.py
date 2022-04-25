@@ -14,7 +14,8 @@ N = 8
 M = 6
 loops = 25
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-g = [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1]
+#g = [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1]
+g = [+1, +1, +1, -1, -1, -1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, -1, +1, -1, -1, +1, -1]
 
 def to_phase(i):
     if i == 1:
@@ -24,9 +25,10 @@ def to_phase(i):
     raise ValueError()
 
 code_utils.full_code_check(c, N, M)
-code_utils.check_good_modulation_code(g)
+code_utils.check_good_modulation_code(g, 3)
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.tlan", "w")
-pulse_len = lag_step*max_duty_cycle
+dt_BEAMON_RFON_us = 40.1
+pulse_len = lag_step*max_duty_cycle - dt_BEAMON_RFON_us*1e-6
 baud_len_us = pulse_len*1e6/len(g)
 baud_len_us = int(baud_len_us*10)/10
 oversample_factor = 2
@@ -37,13 +39,13 @@ for ci, cc in enumerate(c):
     file.write("%%%%%%%%%%%%%%%%%%%%\n")
     file.write(f"%% SUBCYCLE {ci + 1}\n")
     file.write("%%%%%%%%%%%%%%%%%%%%\n")
-    file.write(f"SETTCR	{ci*lag_step*1e6:.1f}\n")
+    file.write(f"SETTCR\t{ci*lag_step*1e6:.1f}\n")
     if ci == 0:
-        file.write("AT	1.1	CHQPULS,RXSYNC,NCOSEL0,AD1L,AD2R,STFIR\n")
-    file.write("AT	2	RXPROT,LOPROT\n")
-    file.write("AT	32.9	BEAMON,F5\n")
+        file.write("AT\t1.1\tCHQPULS,RXSYNC,NCOSEL0,AD1L,AD2R,STFIR\n")
+    file.write("AT\t2\tRXPROT,LOPROT\n")
+    file.write("AT\t32.9\tBEAMON,F5\n")
     cur_phase = cc*g[0]
-    tx_start_us = 73
+    tx_start_us = 32.9 + dt_BEAMON_RFON_us
     file.write("%% RF TRANSMISSION\n")
     file.write(f"AT\t{tx_start_us:.1f}\tCH2,CH5,RFON,{to_phase(cur_phase)}\n")
     for cj, gg in enumerate(g[1:]):
@@ -79,7 +81,7 @@ file.write(f"AT\t{lag_step*len(c)*1e6:.1f}\tREP\n\n")
 file.close()
 range_gate_height = baud_len_us*consts.c*1e-6
 print(f"resulting pulse length: {baud_len_us*len(g):.5g}us")
-print(f"resulting duty cycle: {baud_len_us*len(g)/lag_step*1e-6*100:.5g}%")
+print(f"resulting duty cycle (usable): {baud_len_us*len(g)/lag_step*1e-6*100:.5g}%")
 print(f"resulting height resolution: {range_gate_height*1e-3:.5g}km")
 print(f"resulting baud length: {baud_len_us:.5g}us")
 max_height = (N*lag_step + rx_start_us*1e-6 - tx_end_us*1e-6)*consts.c/2
