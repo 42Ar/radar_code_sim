@@ -1,0 +1,25 @@
+FIRPAR_VS 0.1
+
+% DDFplan 1.1 - assuming 15.0 MHz A/D
+% 27-Nov-2001
+% L,N=   5,2
+% F_CLK > 0.266667 x CLK_IN
+%ddfplan15(9,5,5,5,2)
+% HDF pole1: 1666666.667 Hz
+% FIR pole1: 833333.333 Hz
+H_STAGES 5
+H_GROWTH 34
+
+H_DRATE  8
+H_BYP    0
+F_CLA    0
+
+F_TAPS   5
+F_ESYM   1
+F_DRATE  4
+F_BYP    0
+F_0AD    0
+
+TAP 0 0x04708  % 0.0347
+TAP 1 0x16328  % 0.1734
+TAP 2 0x2C64F  % 0.3468
