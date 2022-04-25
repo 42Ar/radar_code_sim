@@ -73,6 +73,8 @@ for ci, cc in enumerate(c):
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us}\tCH2,CH5\n")
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us}\tALLOFF\n")
     file.write("\n")
+file.write(f"AT\t{lag_step*1e6 - 1:.1f}\tBUFLIP,STC\n")
+file.write("SETTCR\t0.0\n")
 file.write(f"AT\t{lag_step*len(c)*1e6:.1f}\tREP\n\n")
 file.close()
 range_gate_height = baud_len_us*consts.c*1e-6
