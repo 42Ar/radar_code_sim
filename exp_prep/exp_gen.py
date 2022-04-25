@@ -7,14 +7,13 @@ import consts
 import code_utils
 
 lag_step = 1e-3
-max_duty_cycle = 0.125
-max_height = 800e3
+duty_cycle = 0.122  # maximum is 0.125
 plot_altitudes = True
+sample_freq = 15e6
 N = 8
 M = 6
-loops = 25
+loops = 2000
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-#g = [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, 1, -1, 1]
 g = [+1, +1, +1, -1, -1, -1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, -1, +1, -1, -1, +1, -1]
 
 def to_phase(i):
@@ -28,10 +27,10 @@ code_utils.full_code_check(c, N, M)
 code_utils.check_good_modulation_code(g, 3)
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.tlan", "w")
 dt_BEAMON_RFON_us = 40.1
-pulse_len = lag_step*max_duty_cycle - dt_BEAMON_RFON_us*1e-6
+pulse_len = lag_step*duty_cycle - dt_BEAMON_RFON_us*1e-6
 baud_len_us = pulse_len*1e6/len(g)
 baud_len_us = int(baud_len_us*10)/10
-oversample_factor = 2
+oversample_factor = 1
 rx_sample_len_us = baud_len_us/oversample_factor
 file.write(f"%% CODE(N={N}, M={M}, L={len(c)}): {c}\n")
 file.write(f"%% MODULATION: {g}\n\n")
@@ -81,12 +80,36 @@ file.write(f"AT\t{lag_step*len(c)*1e6:.1f}\tREP\n\n")
 file.close()
 range_gate_height = baud_len_us*consts.c*1e-6
 print(f"resulting pulse length: {baud_len_us*len(g):.5g}us")
+print(f"resulting sampling interval: {rx_sample_len_us:.5g}us")
+print(f"resulting decimation factor: {rx_sample_len_us*sample_freq*1e-6:.5g}")
 print(f"resulting duty cycle (usable): {baud_len_us*len(g)/lag_step*1e-6*100:.5g}%")
 print(f"resulting height resolution: {range_gate_height*1e-3:.5g}km")
 print(f"resulting baud length: {baud_len_us:.5g}us")
 max_height = (N*lag_step + rx_start_us*1e-6 - tx_end_us*1e-6)*consts.c/2
 print(f"resulting max height: {max_height*1e-3:.5g}km")
-print(f"experiment time {loops*lag_step*len(c):.2g}s")
+print(f"experiment time {loops*lag_step*len(c):.5g}s")
+
+file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.fil", "w")
+file.write("nr_stc=1;\n")
+channels = [2, 1, 5, 4]
+vec_lens = [len(c)*(len(g)*oversample_factor + calib_samples), len(c)*samples]*2
+for channel, vec_len in zip(channels, vec_lens):
+    file.write(f"channel={channel};\n")
+    file.write("type=0;\n")
+    file.write(f"\tvec_len={vec_len};\n")
+    file.write("\tsub_vec_len=0;\n")
+    file.write("\tdata_start=0;\n")
+    file.write("\tsub_data_start=0;\n")
+    file.write(f"\tres_mult={loops};\n")
+    file.write(f"\tnr_rep={loops};\n")
+    file.write("\tnr_loops=1;\n")
+    file.write("\tsend_raw=1;\n")
+    file.write("\traw_short=1;\n")
+    file.write("end_type\n")
+    file.write("end_chan\n")
+file.close()
+print(f"mem per file: {loops*sum(vec_lens)*16/1e6:.0f}Mb")
+
 
 if plot_altitudes:
     import matplotlib.pyplot as plt
