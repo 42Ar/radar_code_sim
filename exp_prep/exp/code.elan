@@ -7,27 +7,27 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set SCAN_PAT $scan 	        ;# Scan pattern to use
     set Owner $owner 	        ;# Who is running the experiment (CP, SW ... so on)
     set Height $height          ;# Height used
-    set XDIR /kst/exp/code_test	;# Default directory
+    set XDIR /kst/exp/no/code_test	;# Default directory
     set Version 1.00		    ;# What version
-    set FIR /kst/exp/code_test  ;# Where we have fir filters
+    set FIR /kst/exp/no/code_test  ;# Where we have fir filters
     set Expname "code"          ;# experiment name    
-    set Iper_us 96000000.0	    ;# Integration time in us
+    set Iper_us 96000000.0	;# Integration time in us
     set Loopc 2000              ;# loops for one integration
     set Sync 0                  ;# sync time between integrations
-    set SCANDIR /kst/exp/code_test
+    set SCANDIR /kst/exp/no/code_test
     set ttx 0
     
     # On what radar are we?
-	set Site "v"
-	set RADAR vhf
-	if {$ttx=="0"} {setpanelpath split}
-	transferlo rec
-	selectlo lo1 I 290
-	selectlo lo1 II 290
-	selectlo lo2 I 78
-	selectlo lo2 II 78
-	set ant v
-	transferlo rec
+    set Site "v"
+    set RADAR vhf
+    if {$ttx=="0"} {setpanelpath split}
+    transferlo rec
+    selectlo lo1 I 290
+    selectlo lo1 II 290
+    selectlo lo2 I 78
+    selectlo lo2 II 78
+    set ant v
+    transferlo rec
 
     set SCAN_FILE $SCANDIR/${SCAN_PAT}_pattern.elan
     set Iper_s [expr double($Iper_us)/double(1000000)]
@@ -36,7 +36,7 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set Expid "kst0 ${Expname}_${SCAN_PAT}_${Version}${Site}_${Owner}" 
 
     # Filter to use
-	set Filter1 $FIR/b170d45.fir	;
+    set Filter1 $FIR/b170d45.fir;
 
     # NCO file to load into channels boards
     set NCO1 $XDIR/ch1_manda-v.nco
@@ -51,33 +51,27 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     #############
     # Actual work
     #############
-    source ${SCAN_PAT}
+    source ${SCAN_FILE}
 
     # Stop receiver --
     SYNC -10
     stopradar -rec
-    if {[ISUHF]||[ISVHF]||[ISESR]} {
-	if {$ttx=="0"} {stopradar -trans}
-    }
-    if {[ISESR]} {
-	stopradar -pla
-	stopdata pla
+    if {$ttx=="0"} {
+        stopradar -trans
     }
     stopdata
 
     # Load radar controller --
-	loadradar rec -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.rbin -prog1 0
-	if {[ISUHF]||[ISVHF]} {
-	    if {$ttx=="0"} {
-	        loadradar trans -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.tbin -prog1 0
-	    }
+    loadradar rec -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.rbin -prog1 0
+    if {$ttx=="0"} {
+        loadradar trans -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.tbin -prog1 0
     }
 
     # Load filters --
     loadfilter $Filter1 ch1,2,4,5
 
     # Set frequencies --
-	loadfrequency -u $NCO1 ch1,2,4,5
+    loadfrequency -u $NCO1 ch1,2,4,5
 
     # Make initial load of frequencies
     setfrequency ch1,2,4,5 12.0
@@ -85,16 +79,14 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     # Start radar controllers --
     SYNC 2
     armradar rec -prog1
-    if {[ISUHF]||[ISVHF]||[ISESR]} {
-	armradar trans -prog1
-    }
+    armradar trans -prog1
 
     startradar EXPSTART $Iper_s
 
     # Start data access -----------------------------------------------
     SYNC 4
     upar 15 $Version	;#Set exp version into upar 15 (d_parbl(58))
-	startdata $Corrfile $Expid $Iper_us
+    startdata $Corrfile $Expid $Iper_us
     # upar 1 [expr -($Loopc/4)]	;# Set initital notch filter width
 
     # Write all experiment related files to the data directory 
@@ -103,16 +95,10 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     disablerecording
 
     # Infinite scanning loop
-
     set ExpStart [timestamp [getstarttime exp]]   
-    if {[ISESR]} {
-	callblock ${SCAN_PAT}_pattern $Iper_s
-    } else {
-	gotoblock ${SCAN_PAT} $ExpStart $Expname $Height
-    }
+    gotoblock ${SCAN_PAT} $ExpStart $Expname $Height
 
     # Ensure that we will not fall out of this proc
     DO -1 { SYNC 100 }
-
 };
 eval callblock code_test [argv]
