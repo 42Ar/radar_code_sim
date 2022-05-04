@@ -5,16 +5,18 @@ sys.path.append("/home/frank/study/special_curriculum/isr_sim")
 sys.path.append("..")
 import consts
 import code_utils
+import numpy.random as rand
 
 lag_step = 1e-3
-duty_cycle = 0.122  # maximum is 0.125
+duty_cycle = 0.125  # maximum is 0.125
 plot_altitudes = True
 sample_freq = 15e6
 N = 8
 M = 6
-loops = 2000
+loops = 10
+calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-g = [+1, +1, +1, -1, -1, -1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, -1, +1, -1, -1, +1, -1]
+g = rand.default_rng(42).integers(0, 2, 141)*2 - 1
 
 def to_phase(i):
     if i == 1:
@@ -24,7 +26,6 @@ def to_phase(i):
     raise ValueError()
 
 code_utils.full_code_check(c, N, M)
-code_utils.check_good_modulation_code(g, 3)
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.tlan", "w")
 dt_BEAMON_RFON_us = 40.1
 pulse_len = lag_step*duty_cycle - dt_BEAMON_RFON_us*1e-6
@@ -60,7 +61,6 @@ for ci, cc in enumerate(c):
     rx_start_us = tx_end_us + 123.6
     file.write(f"AT\t{rx_start_us:.1f}\tCH1,CH4\n")
     buffer_off_calib_us = 11.6
-    calib_samples = 10
     samples = int((lag_step*1e6 - rx_start_us - buffer_off_calib_us - calib_samples*rx_sample_len_us)/rx_sample_len_us)
     if ci == 0:
         print(f"samples per subcycle: {samples}")
