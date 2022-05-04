@@ -15,7 +15,7 @@ end_chan
 channel=1;
 type=0;
 	vec_len=56352;
-	sub_vec_len=0;
+	sub_vec_len={len(c)*samples};
 	data_start=0;
 	sub_data_start=0;
 	res_mult=25;
@@ -41,7 +41,7 @@ end_chan
 channel=4;
 type=0;
 	vec_len=56352;
-	sub_vec_len=0;
+	sub_vec_len={len(c)*samples};
 	data_start=0;
 	sub_data_start=0;
 	res_mult=25;
