@@ -128,7 +128,7 @@ for calib_channel, data_channel in channels:
     file.write(f"channel={data_channel};\n")
     file.write("type=0;\n")
     file.write(f"\tvec_len={len(c)*samples};\n")
-    file.write("\tsub_vec_len={len(c)*samples};\n")
+    file.write(f"\tsub_vec_len={len(c)*samples};\n")
     file.write("\tdata_start=0;\n")
     file.write("\tsub_data_start=0;\n")
     file.write(f"\tres_mult={loops};\n")
