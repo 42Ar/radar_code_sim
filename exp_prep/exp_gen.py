@@ -94,12 +94,40 @@ print(f"experiment time {loops*lag_step*len(c):.5g}s")
 
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.fil", "w")
 file.write("nr_stc=1;\n")
-channels = [2, 1, 5, 4]
-vec_lens = [len(c)*(len(g)*oversample_factor + calib_samples), len(c)*samples]*2
-for channel, vec_len in zip(channels, vec_lens):
-    file.write(f"channel={channel};\n")
+channels = [(2, 1), (5, 4)]
+vec_lens = [len(c)*(len(g)*oversample_factor + calib_samples), ]*2
+for calib_channel, data_channel in channels:
+    file.write(f"channel={calib_channel};\n")
     file.write("type=0;\n")
-    file.write(f"\tvec_len={vec_len};\n")
+    
+    file.write(f"\tvec_len={len(g)*oversample_factor + calib_samples};\n")
+    file.write(f"\tsub_vec_len={len(g)*oversample_factor};\n")
+    file.write("\tdata_start=0;\n")
+    file.write("\tsub_data_start=0;\n")
+    file.write("\tres_mult=1;\n")
+    file.write(f"\tnr_rep={len(c)};\n")
+    file.write(f"\tnr_loops={loops};\n")
+    file.write("\tsend_raw=1;\n")
+    file.write("\traw_short=1;\n")
+    file.write("end_type\n")
+    
+    file.write("type=0;\n")
+    file.write(f"\tvec_len={len(g)*oversample_factor + calib_samples};\n")
+    file.write(f"\tsub_vec_len={calib_samples};\n")
+    file.write(f"\tdata_start={len(g)*oversample_factor};\n")
+    file.write("\tsub_data_start=0;\n")
+    file.write("\tres_mult=1;\n")
+    file.write(f"\tnr_rep={len(c)};\n")
+    file.write(f"\tnr_loops={loops};\n")
+    file.write("\tsend_raw=1;\n")
+    file.write("\traw_short=1;\n")
+    file.write("end_type\n")
+    
+    file.write("end_chan\n")
+    
+    file.write(f"channel={data_channel};\n")
+    file.write("type=0;\n")
+    file.write(f"\tvec_len={len(c)*samples};\n")
     file.write("\tsub_vec_len=0;\n")
     file.write("\tdata_start=0;\n")
     file.write("\tsub_data_start=0;\n")

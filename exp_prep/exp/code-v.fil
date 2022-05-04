@@ -1,13 +1,24 @@
 nr_stc=1;
 channel=2;
 type=0;
-	vec_len=6816;
-	sub_vec_len=0;
+	vec_len=142;
+	sub_vec_len=132;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=25;
-	nr_rep=25;
-	nr_loops=1;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=25;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=0;
+	vec_len=142;
+	sub_vec_len=10;
+	data_start=132;
+	sub_data_start=0;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=25;
 	send_raw=1;
 	raw_short=1;
 end_type
@@ -27,13 +38,24 @@ end_type
 end_chan
 channel=5;
 type=0;
-	vec_len=6816;
-	sub_vec_len=0;
+	vec_len=142;
+	sub_vec_len=132;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=25;
-	nr_rep=25;
-	nr_loops=1;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=25;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=0;
+	vec_len=142;
+	sub_vec_len=10;
+	data_start=132;
+	sub_data_start=0;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=25;
 	send_raw=1;
 	raw_short=1;
 end_type
