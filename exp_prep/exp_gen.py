@@ -17,7 +17,7 @@ loops = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
 seed = 13
-g = list(rand.default_rng(seed).integers(0, 2, 66)*2 - 1)
+g = list(rand.default_rng(seed).integers(0, 2, 70)*2 - 1)
 oversample_factor = 2
 
 def to_phase(i):
