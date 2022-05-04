@@ -34,6 +34,7 @@ pulse_len = lag_step*duty_cycle - dt_BEAMON_RFON_us*1e-6
 baud_len_us = pulse_len*1e6/len(g)
 baud_len_us = int(baud_len_us*10)/10
 buflip_time_us = 1
+alloff_to_buflip = 1
 rx_sample_len_us = baud_len_us/oversample_factor
 file.write(f"%% CODE(N={N}, M={M}, L={len(c)}): {c}\n")
 file.write(f"%% MODULATION(L={len(g)}, seed={seed}): {g}\n\n")
@@ -63,7 +64,7 @@ for ci, cc in enumerate(c):
     rx_start_us = tx_end_us + 123.6
     file.write(f"AT\t{rx_start_us:.1f}\tCH1,CH4\n")
     buffer_off_calib_us = 11.6
-    samples = int((lag_step*1e6 - rx_start_us - buflip_time_us - buffer_off_calib_us - calib_samples*rx_sample_len_us)/rx_sample_len_us)
+    samples = int((lag_step*1e6 - rx_start_us - buflip_time_us - buffer_off_calib_us - alloff_to_buflip - calib_samples*rx_sample_len_us)/rx_sample_len_us)
     if ci == 0:
         print(f"samples per subcycle: {samples}")
     rx_end_us = rx_start_us + rx_sample_len_us*samples
