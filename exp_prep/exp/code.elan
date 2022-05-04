@@ -36,7 +36,7 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set Expid "kst0 ${Expname}_${SCAN_PAT}_${Version}${Site}_${Owner}" 
 
     # Filter to use
-    set Filter1 $FIR/b170d45.fir;
+    set Filter1 $FIR/b700d9.fir;
 
     # NCO file to load into channels boards
     set NCO1 $XDIR/ch1_manda-v.nco
