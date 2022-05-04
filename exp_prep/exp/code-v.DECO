@@ -1,0 +1,16 @@
+DECO 2.0
+1	3158400
+3158400
+4
+% Channel=2 type=0 data_start=0 vec_len=6816 max_lag=-1 res_mult=25 sub_div=1 do_zlag=0 lag_incr=1 fir_len=0
+% Data position in d_raw vector 0 - 170399
+1	R	1	0	170400	0	0	0	0	6816	0	0	170400	0	7	 1 25 6816 0 0 25 0 
+% Channel=1 type=0 data_start=0 vec_len=56352 max_lag=-1 res_mult=25 sub_div=1 do_zlag=0 lag_incr=1 fir_len=0
+% Data position in d_raw vector 170400 - 1579199
+2	R	1	170400	1408800	0	0	0	0	56352	0	170400	1408800	0	7	 1 25 56352 0 0 25 0 
+% Channel=5 type=0 data_start=0 vec_len=6816 max_lag=-1 res_mult=25 sub_div=1 do_zlag=0 lag_incr=1 fir_len=0
+% Data position in d_raw vector 1579200 - 1749599
+3	R	1	1579200	170400	0	0	0	0	6816	0	1579200	170400	0	7	 1 25 6816 0 0 25 0 
+% Channel=4 type=0 data_start=0 vec_len=56352 max_lag=-1 res_mult=25 sub_div=1 do_zlag=0 lag_incr=1 fir_len=0
+% Data position in d_raw vector 1749600 - 3158399
+4	R	1	1749600	1408800	0	0	0	0	56352	0	1749600	1408800	0	7	 1 25 56352 0 0 25 0 
