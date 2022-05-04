@@ -1,7 +1,7 @@
 nr_stc=1;
 channel=2;
 type=0;
-	vec_len=7248;
+	vec_len=7200;
 	sub_vec_len=0;
 	data_start=0;
 	sub_data_start=0;
@@ -14,7 +14,7 @@ end_type
 end_chan
 channel=1;
 type=0;
-	vec_len=56064;
+	vec_len=56112;
 	sub_vec_len=0;
 	data_start=0;
 	sub_data_start=0;
@@ -27,7 +27,7 @@ end_type
 end_chan
 channel=5;
 type=0;
-	vec_len=7248;
+	vec_len=7200;
 	sub_vec_len=0;
 	data_start=0;
 	sub_data_start=0;
@@ -40,7 +40,7 @@ end_type
 end_chan
 channel=4;
 type=0;
-	vec_len=56064;
+	vec_len=56112;
 	sub_vec_len=0;
 	data_start=0;
 	sub_data_start=0;

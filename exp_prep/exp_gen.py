@@ -16,7 +16,8 @@ M = 6
 loops = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-g = list(rand.default_rng(42).integers(0, 2, 141)*2 - 1)
+seed = 13
+g = list(rand.default_rng(seed).integers(0, 2, 70)*2 - 1)
 
 def to_phase(i):
     if i == 1:
@@ -31,10 +32,10 @@ dt_BEAMON_RFON_us = 40.1
 pulse_len = lag_step*duty_cycle - dt_BEAMON_RFON_us*1e-6
 baud_len_us = pulse_len*1e6/len(g)
 baud_len_us = int(baud_len_us*10)/10
-oversample_factor = 1
+oversample_factor = 2
 rx_sample_len_us = baud_len_us/oversample_factor
 file.write(f"%% CODE(N={N}, M={M}, L={len(c)}): {c}\n")
-file.write(f"%% MODULATION: {g}\n\n")
+file.write(f"%% MODULATION(L={len(g)}, seed={seed}): {g}\n\n")
 for ci, cc in enumerate(c):
     file.write("%%%%%%%%%%%%%%%%%%%%\n")
     file.write(f"%% SUBCYCLE {ci + 1}\n")
