@@ -8,13 +8,13 @@ import code_utils
 import numpy.random as rand
 import numpy as np
 
-lag_step = 1001e-6
+lag_step = 1025e-6
 duty_cycle = 0.125  # maximum is 0.125
 plot_altitudes = True
 sample_freq = 15e6
 N = 8
 M = 6
-loops = 25
+loops = 400
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
 seed = 4178
