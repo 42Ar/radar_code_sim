@@ -51,7 +51,7 @@ for ci, cc in enumerate(c):
     cur_phase = cc*g[0]
     tx_start_us = 32.9 + dt_BEAMON_RFON_us
     file.write("%% RF TRANSMISSION\n")
-    file.write(f"AT\t{tx_start_us:.1f}\tCH2,CH5,RFON,{to_phase(cur_phase)}\n")
+    file.write(f"AT\t{tx_start_us:.1f}\tCH1,CH4,RFON,{to_phase(cur_phase)}\n")
     for cj, gg in enumerate(g[1:]):
         if cc*gg != cur_phase:
             cur_phase = cc*gg
@@ -71,11 +71,11 @@ for ci, cc in enumerate(c):
     rx_end_us = rx_start_us + rx_sample_len_us*samples
     if ci%2 == 0:
         file.write(f"AT\t{rx_end_us:.1f}\tALLOFF,CALON\n")
-        file.write(f"AT\t{rx_end_us + buffer_off_calib_us:.1f}\tCH2,CH5\n")
+        file.write(f"AT\t{rx_end_us + buffer_off_calib_us:.1f}\tCH1,CH4\n")
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us:.1f}\tALLOFF,CALOFF\n")
     else:
         file.write(f"AT\t{rx_end_us:.1f}\tALLOFF\n")
-        file.write(f"AT\t{rx_end_us + buffer_off_calib_us:.1f}\tCH2,CH5\n")
+        file.write(f"AT\t{rx_end_us + buffer_off_calib_us:.1f}\tCH1,CH4\n")
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us:.1f}\tALLOFF\n")
     file.write("\n")
 file.write(f"AT\t{lag_step*1e6 - buflip_time_us:.1f}\tBUFLIP,STC\n")
@@ -96,41 +96,11 @@ print(f"integration time {loops*lag_step*len(c)*1e6:.10g}us")
 
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.fil", "w")
 file.write("nr_stc=1;\n")
-channels = [(2, 1), (5, 4)]
-vec_lens = [len(c)*(len(g)*oversample_factor + calib_samples), ]*2
-for calib_channel, data_channel in channels:
-    file.write(f"channel={calib_channel};\n")
+for channel in [1, 4]:
+    file.write(f"channel={channel};\n")
     file.write("type=0;\n")
-    
-    file.write(f"\tvec_len={len(c)*(len(g)*oversample_factor + calib_samples)};\n")
-    file.write(f"\tsub_vec_len={len(c)*(len(g)*oversample_factor + calib_samples)};\n")
-    file.write("\tdata_start=0;\n")
-    file.write("\tsub_data_start=0;\n")
-    file.write(f"\tres_mult={loops};\n")
-    file.write(f"\tnr_rep={loops};\n")
-    file.write("\tnr_loops=1;\n")
-    file.write("\tsend_raw=1;\n")
-    file.write("\traw_short=1;\n")
-    file.write("end_type\n")
-    
-#    file.write("type=0;\n")
- #   file.write(f"\tvec_len={len(g)*oversample_factor + calib_samples};\n")
-  #  file.write(f"\tsub_vec_len={calib_samples};\n")
-   # file.write("\tdata_start=0;\n")
-  #  file.write(f"\tsub_data_start={len(g)*oversample_factor};\n")
-    #file.write("\tres_mult=2;\n")
- #   file.write("\tnr_rep=2;\n")
- #   file.write(f"\tnr_loops={len(c)};\n")
- #   file.write("\tsend_raw=1;\n")
- #   file.write("\traw_short=1;\n")
- #   file.write("end_type\n")
-    
-    file.write("end_chan\n")
-    
-    file.write(f"channel={data_channel};\n")
-    file.write("type=0;\n")
-    file.write(f"\tvec_len={len(c)*samples};\n")
-    file.write(f"\tsub_vec_len={len(c)*samples};\n")
+    file.write(f"\tvec_len={len(c)*(len(g)*oversample_factor + calib_samples + samples)};\n")
+    file.write(f"\tsub_vec_len={len(c)*(len(g)*oversample_factor + calib_samples + samples)};\n")
     file.write("\tdata_start=0;\n")
     file.write("\tsub_data_start=0;\n")
     file.write(f"\tres_mult={loops};\n")
@@ -141,7 +111,7 @@ for calib_channel, data_channel in channels:
     file.write("end_type\n")
     file.write("end_chan\n")
 file.close()
-print(f"mem per file: {loops*sum(vec_lens)*16/1e6:.0f}Mb")
+print(f"mem per file: {2*loops*len(c)*(len(g)*oversample_factor + calib_samples + samples)*16/1e6:.0f}Mb")
 
 
 if plot_altitudes:
