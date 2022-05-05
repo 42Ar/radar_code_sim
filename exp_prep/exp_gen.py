@@ -15,6 +15,7 @@ sample_freq = 15e6
 N = 8
 M = 6
 loops = 400
+samples_after_RFOFF = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
 seed = 4178
@@ -58,7 +59,7 @@ for ci, cc in enumerate(c):
             file.write(f"AT\t{tx_start_us + (cj + 1)*baud_len_us:.1f}\t{to_phase(cur_phase)}\n")
     tx_end_us = tx_start_us + len(g)*baud_len_us
     file.write(f"AT\t{tx_end_us:.1f}\tRFOFF,PHA0,BEAMOFF\n")
-    file.write(f"AT\t{tx_end_us + 7.2:.1f}\tALLOFF\n")
+    file.write(f"AT\t{tx_end_us + samples_after_RFOFF*rx_sample_len_us:.1f}\tALLOFF\n")
     file.write(f"AT\t{tx_end_us + 80:.1f}\tRXPOFF\n")
     file.write(f"AT\t{tx_end_us + 100:.1f}\tLOPOFF\n")
     file.write("%% SIGNAL RECEPTION\n")
@@ -103,8 +104,8 @@ for calib_channel, data_channel in channels:
     file.write(f"channel={calib_channel};\n")
     file.write("type=0;\n")
     
-    file.write(f"\tvec_len={len(c)*(len(g)*oversample_factor + calib_samples)};\n")
-    file.write(f"\tsub_vec_len={len(c)*(len(g)*oversample_factor + calib_samples)};\n")
+    file.write(f"\tvec_len={len(c)*(len(g)*oversample_factor + calib_samples + samples_after_RFOFF)};\n")
+    file.write(f"\tsub_vec_len={len(c)*(len(g)*oversample_factor + calib_samples + samples_after_RFOFF)};\n")
     file.write("\tdata_start=0;\n")
     file.write("\tsub_data_start=0;\n")
     file.write(f"\tres_mult={loops};\n")
