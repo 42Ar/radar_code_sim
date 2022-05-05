@@ -8,7 +8,7 @@ import code_utils
 import numpy.random as rand
 import numpy as np
 
-lag_step = 1e-3
+lag_step = 1001e-6
 duty_cycle = 0.125  # maximum is 0.125
 plot_altitudes = True
 sample_freq = 15e6
@@ -91,7 +91,8 @@ print(f"resulting height resolution: {range_gate_height*1e-3:.5g}km")
 print(f"resulting baud length: {baud_len_us:.5g}us")
 max_height = (N*lag_step + rx_start_us*1e-6 - tx_end_us*1e-6)*consts.c/2
 print(f"resulting max height: {max_height*1e-3:.5g}km")
-print(f"experiment time {loops*lag_step*len(c):.5g}s")
+print(f"integration time {loops*lag_step*len(c):.5g}s")
+print(f"integration time {loops*lag_step*len(c)*1e6:.10g}us")
 
 file = open("/home/frank/study/radar_code/radar_code_sim/exp_prep/exp/code-v.fil", "w")
 file.write("nr_stc=1;\n")

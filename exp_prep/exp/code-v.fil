@@ -14,8 +14,8 @@ end_type
 end_chan
 channel=1;
 type=0;
-	vec_len=56352;
-	sub_vec_len=56352;
+	vec_len=56448;
+	sub_vec_len=56448;
 	data_start=0;
 	sub_data_start=0;
 	res_mult=25;
@@ -40,8 +40,8 @@ end_type
 end_chan
 channel=4;
 type=0;
-	vec_len=56352;
-	sub_vec_len=56352;
+	vec_len=56448;
+	sub_vec_len=56448;
 	data_start=0;
 	sub_data_start=0;
 	res_mult=25;
