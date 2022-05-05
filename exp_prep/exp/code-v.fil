@@ -1,26 +1,26 @@
 nr_stc=1;
 channel=1;
 type=0;
-	vec_len=60144;
-	sub_vec_len=60144;
+	vec_len=1253;
+	sub_vec_len=1253;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=400;
-	nr_rep=400;
-	nr_loops=1;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=400;
 	send_raw=1;
 	raw_short=1;
 end_type
 end_chan
 channel=4;
 type=0;
-	vec_len=60144;
-	sub_vec_len=60144;
+	vec_len=1253;
+	sub_vec_len=1253;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=400;
-	nr_rep=400;
-	nr_loops=1;
+	res_mult=1;
+	nr_rep=48;
+	nr_loops=400;
 	send_raw=1;
 	raw_short=1;
 end_type
