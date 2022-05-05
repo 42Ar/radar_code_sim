@@ -1,26 +1,52 @@
 nr_stc=1;
-channel=1;
+channel=2;
 type=0;
-	vec_len=1253;
-	sub_vec_len=1253;
+	vec_len=6816;
+	sub_vec_len=6816;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=1;
-	nr_rep=48;
-	nr_loops=400;
+	res_mult=400;
+	nr_rep=400;
+	nr_loops=1;
+	send_raw=1;
+	raw_short=1;
+end_type
+end_chan
+channel=1;
+type=0;
+	vec_len=58368;
+	sub_vec_len=58368;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=400;
+	nr_rep=400;
+	nr_loops=1;
+	send_raw=1;
+	raw_short=1;
+end_type
+end_chan
+channel=5;
+type=0;
+	vec_len=6816;
+	sub_vec_len=6816;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=400;
+	nr_rep=400;
+	nr_loops=1;
 	send_raw=1;
 	raw_short=1;
 end_type
 end_chan
 channel=4;
 type=0;
-	vec_len=1253;
-	sub_vec_len=1253;
+	vec_len=58368;
+	sub_vec_len=58368;
 	data_start=0;
 	sub_data_start=0;
-	res_mult=1;
-	nr_rep=48;
-	nr_loops=400;
+	res_mult=400;
+	nr_rep=400;
+	nr_loops=1;
 	send_raw=1;
 	raw_short=1;
 end_type
