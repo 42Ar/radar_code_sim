@@ -18,8 +18,9 @@ loops = 25
 samples_after_RFOFF = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-seed = 4178
-g = list(rand.default_rng(seed).integers(0, 2, 66)*2 - 1)
+#seed = 4178
+#g = list(rand.default_rng(seed).integers(0, 2, 66)*2 - 1)
+g = np.ones(66)
 oversample_factor = 2
 
 def to_phase(i):
