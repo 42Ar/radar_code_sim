@@ -37,8 +37,8 @@ baud_len_us = int(baud_len_us*10)/10
 buflip_time_us = 1
 alloff_to_buflip = 1
 rx_sample_len_us = baud_len_us/oversample_factor
-file.write(f"%% CODE(N={N}, M={M}, L={len(c)}):\n" + repr(np.array(c)) + "\n")
-file.write(f"%% MODULATION(L={len(g)}, seed={seed}):\n" + repr(np.array(g)) + "\n\n")
+file.write(f"%% CODE(N={N}, M={M}, L={len(c)}):\n%% " + repr(np.array(c)).replace("\n", "\n%% ") + "\n")
+file.write(f"%% MODULATION(L={len(g)}, seed={seed}):\n%% " + repr(np.array(g)).replace("\n", "\n%% ") + "\n\n")
 for ci, cc in enumerate(c):
     file.write("%%%%%%%%%%%%%%%%%%%%\n")
     file.write(f"%% SUBCYCLE {ci + 1}\n")
