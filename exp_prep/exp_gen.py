@@ -14,7 +14,7 @@ plot_altitudes = True
 sample_freq = 15e6
 N = 8
 M = 6
-loops = 400
+loops = 25
 samples_after_RFOFF = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
@@ -77,7 +77,6 @@ for ci, cc in enumerate(c):
     else:
         file.write(f"AT\t{rx_end_us:.1f}\tALLOFF\n")
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us:.1f}\tCH2,CH5\n")
-        print(rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us)
         file.write(f"AT\t{rx_end_us + buffer_off_calib_us + calib_samples*rx_sample_len_us:.1f}\tALLOFF\n")
     file.write("\n")
 file.write(f"AT\t{lag_step*1e6 - buflip_time_us:.1f}\tBUFLIP,STC\n")
