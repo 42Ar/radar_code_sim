@@ -6,6 +6,7 @@ sys.path.append("..")
 import consts
 import code_utils
 import numpy.random as rand
+import numpy as np
 
 lag_step = 1e-3
 duty_cycle = 0.125  # maximum is 0.125
@@ -16,7 +17,7 @@ M = 6
 loops = 25
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-seed = 46
+seed = 4178
 g = list(rand.default_rng(seed).integers(0, 2, 66)*2 - 1)
 oversample_factor = 2
 
@@ -36,8 +37,8 @@ baud_len_us = int(baud_len_us*10)/10
 buflip_time_us = 1
 alloff_to_buflip = 1
 rx_sample_len_us = baud_len_us/oversample_factor
-file.write(f"%% CODE(N={N}, M={M}, L={len(c)}): {c}\n")
-file.write(f"%% MODULATION(L={len(g)}, seed={seed}): {g}\n\n")
+file.write(f"%% CODE(N={N}, M={M}, L={len(c)}):\n" + repr(np.array(c)) + "\n")
+file.write(f"%% MODULATION(L={len(g)}, seed={seed}):\n" + repr(np.array(g)) + "\n\n")
 for ci, cc in enumerate(c):
     file.write("%%%%%%%%%%%%%%%%%%%%\n")
     file.write(f"%% SUBCYCLE {ci + 1}\n")
