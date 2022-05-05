@@ -14,7 +14,7 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set Iper_us 1230000            ;# Integration time in us
     set Loopc 25                   ;# loops for one integration
     set Sync 0                     ;# sync time between integrations
-    set SCANDIR /kst/exp/no/code_test/code_test_plain_pulses 
+    set SCANDIR /kst/exp/no/code_test_plain_pulses 
     set ttx 0
     
     # On what radar are we?
