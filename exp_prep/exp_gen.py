@@ -5,23 +5,21 @@ sys.path.append("/home/frank/study/special_curriculum/isr_sim")
 sys.path.append("..")
 import consts
 import code_utils
-import numpy.random as rand
 import numpy as np
 
-lag_step = 1025e-6
-duty_cycle = 0.122  # maximum is 0.125
+lag_step = 1100e-6
+duty_cycle = 0.1085  # maximum is 0.125
 plot_altitudes = True
 sample_freq = 15e6
 N = 8
 M = 6
-loops = 25
+loops = 50
 samples_after_RFOFF = 10
 calib_samples = 10
 c = [-1, +1, -1, +1, +1, +1, +1, +1, +1, +1, +1, -1, -1, +1, -1, -1, -1, -1, +1, -1, +1, +1, -1, -1, -1, +1, +1, -1, -1, -1, -1, +1, -1, -1, -1, +1, -1, -1, +1, +1, -1, +1, -1, -1, +1, -1, -1, +1]
-#seed = 4178
-#g = list(rand.default_rng(seed).integers(0, 2, 66)*2 - 1)
-g = np.ones(66)
-oversample_factor = 2
+seed = 4178
+g = [+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1]
+oversample_factor = 1
 
 def to_phase(i):
     if i == 1:

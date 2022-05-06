@@ -7,14 +7,14 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set SCAN_PAT $scan 	        ;# Scan pattern to use
     set Owner $owner 	        ;# Who is running the experiment (CP, SW ... so on)
     set Height $height          ;# Height used
-    set XDIR /kst/exp/no/code_test_plain_pulses	;# Default directory
+    set XDIR /kst/exp/no/code_test_barker_code	;# Default directory
     set Version 1.00		    ;# What version
-    set FIR /kst/exp/no/code_test_plain_pulses ;# Where we have fir filters
+    set FIR /kst/exp/no/code_test_barker_code ;# Where we have fir filters
     set Expname "code"             ;# experiment name    
-    set Iper_us 1230000            ;# Integration time in us
-    set Loopc 25                   ;# loops for one integration
+    set Iper_us 2640000            ;# Integration time in us
+    set Loopc 50                   ;# loops for one integration
     set Sync 0                     ;# sync time between integrations
-    set SCANDIR /kst/exp/no/code_test_plain_pulses 
+    set SCANDIR /kst/exp/no/code_test_barker_code
     set ttx 0
     
     # On what radar are we?
@@ -36,7 +36,7 @@ BLOCK code_test {{scan zenith} {owner NO} {height 90.0}} {
     set Expid "kst0 ${Expname}_${SCAN_PAT}_${Version}${Site}_${Owner}" 
 
     # Filter to use
-    set Filter1 $FIR/b800d9.fir;
+    set Filter1 $FIR/b83d90.fir;
 
     # NCO file to load into channels boards
     set NCO1 $XDIR/ch1_manda-v.nco
