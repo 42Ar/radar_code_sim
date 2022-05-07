@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 mode = "spread"
 
-def gen_layer_ACF(t, h, N=config.N):
+def gen_layer_ACF(t, h, N=config.N, mode=mode):
     if mode == "spread":
         width = 3*h/N + 1
         return (h/N + 1)*np.exp(-t/width)
