@@ -9,15 +9,6 @@ def check_code(c, k, h, Delta, N, M):
             for j in range(L))
     if r != 0:
         print("code error:", k, h, Delta, r/L)
-        
-        def check_code(k, h, Delta):
-            L = len(c)
-            cc = c*3
-            r = sum((cc[L + j + Delta]*cc[L + j]*
-                     cc[L + j + Delta + h - k]*cc[L + j + h - k])
-                    for j in range(L))
-            if r != 0:
-                print("code error:", k, h, Delta, r/L)
 
 def full_code_check(c, N, M):
     for k in range(N):
