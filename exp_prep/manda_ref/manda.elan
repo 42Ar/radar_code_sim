@@ -1,0 +1,238 @@
+########################################################################
+# manda.elan
+#
+# EROS4 script for manda experiment. 
+#
+# Version: 1.00  Initial version for all sites in one elan file
+# Version: 2.00l ESR increased duty cycle
+# Version: 4.00  ESR/VHF/UHF increased resolution
+#
+# Data layout:
+# ESR	TRO	REM
+# 10	10	500	pts	Sky noise
+# 10	10	500	pts	Noise injection
+# 252	530	54	pts	Decoded short lags E-region
+# 1	1	0		Max short lag
+# 251	529	53	pts	E-region lag profiles a 2(E)1.2(TV)2.4(R) us
+# 128	120	60		Max lag
+# 380	942	113	pts	Undecoded power profile
+# 150	250	53	pts	D-region lag profiles
+# 127	127	127		No D-region lag profiles a 1.25(E)1.5 ms
+# 15	15	15		No D-region lag profiles a 160(E)192 ms
+# 1 	1 	1 		No coherently integrated profiles a 4(E)4.8 s
+# 252	0	0	pts	Decoded short lags F-region
+# 1	0	0		Max short lag
+# 251	0	0	pts	F-region lag profiles a 2(E)3 us
+# 128	0	0		Max lag
+# Tailing gates down;up
+# 62;0	59;0	0;0	gates	D-region
+# 62;62	59;59	0;0	gates	E-region
+# 62;62	0;0	0;0	gates	F-region
+#
+# The clutter notch filter is controlled via upar(1): 
+# Positive number: (1+2*upar(1))*0.25 Hz
+# Negative number: Selfadjusting but maximum (1+2*upar(1))*0.25 Hz
+########################################################################
+
+BLOCK manda {{scan zenith} {owner CP} {height 90.0}} {
+
+    set scan [string tolower $scan]  
+    set owner [string toupper $owner]
+
+    set SCAN_PAT $scan 	;# Scan pattern to use
+    set Owner $owner 	;# Who is running the experiment (CP, SW ... so on)
+    set Height $height  ;# Height used
+    ###############
+    # Definitions #
+    ###############
+    set XDIR /kst/exp/manda	;# Default directory
+    set Version 4.00		;# What version
+    set FIR /kst/dsp/fir	;# Where we have fir filters
+    set Expname "manda"	;# experiment name    
+    set Iper_us 4800000	;# Integration time in us
+    set Loopc 25	;# loops for one integration
+    set Sync 0		;# sync time between integrations
+    set SCANDIR /kst/exp/scans/kst
+    set ttx 0
+    # On what radar are we?
+    if {[ISUHF]} {
+	set RADAR uhf
+	set Site "u"
+	set ant u
+    } elseif {[ISESR]} {
+	set Site "l"
+	set SCANDIR /kst/exp/scans/esr
+	set ant 32m	;# Antenna used
+	set 32p 0
+	if { $scan == "42m" } {
+		set ant 42m
+		set 32p 0
+	}
+	if { $scan == "42p" } {
+		set ant 42m
+		set SCAN_PAT 42m
+	}
+	set Iper_us 4000000
+    } elseif {[ISKIR]||[ISSOD]} {
+	set RADAR uhf
+	set Site "r"
+	set ant r
+    } elseif {[ISVHF]} {
+	set Site "v"
+	set RADAR vhf
+	if {$ttx=="0"} {setpanelpath split}
+	transferlo rec
+	selectlo lo1 I 290
+	selectlo lo1 II 290
+	selectlo lo2 I 78
+	selectlo lo2 II 78
+	set ant v
+	transferlo rec
+	if { $scan == "noraw" } {
+	    set SCAN_PAT zenith
+	}
+    }
+    set SCAN_FILE $SCANDIR/${SCAN_PAT}_pattern.elan
+    set PAT_LIST [split $SCAN_PAT /]	;#Split the user supplied scanning path
+    set SCAN_PAT1 [lindex $PAT_LIST [expr [llength $PAT_LIST]-1]]
+    set Iper_s [expr double($Iper_us)/double(1000000)]
+    set SCAN_PAT ${SCAN_PAT1}
+
+    # Make a proper experiment ID for the system in use
+    set Expid	"kst0 ${Expname}_${SCAN_PAT1}_${Version}${Site}_${Owner}" 
+
+    # Filter to use
+    if {[ISESR]} {
+	set Filter1 $FIR/b170d30.fir	;# +-170 kHz filter for 2 usec sampling
+	set TXFRQ $XDIR/manda-l.frq
+    } elseif {[ISVHF]||[ISUHF]} {
+	set Filter1 $FIR/b300d18.fir	;# +-300 kHz filter for 1.2 usec sampling
+    } else {
+	set Filter1 $FIR/b210d36.fir	;# +-210 kHz filter for 2.4 usec sampling
+    }
+
+    # NCO file to load into channels boards
+    set NCO1 $XDIR/ch1_${Expname}-${Site}.nco
+
+    # DSP file to use
+    set Corrfile $XDIR/${Expname}-${Site}.fil
+    if { [ISVHF] && $scan == "noraw" } { set Corrfile $XDIR/${Expname}-${Site}-noraw.fil }
+
+    # Defines what experiment files should be stored 
+    set Expfiles [list $XDIR/$Expname.elan $SCAN_FILE $Corrfile $XDIR/plwin.c \
+	$XDIR/${Expname}_${Site}a.par $NCO1 $Filter1 $XDIR/rtg_def.m \
+	$XDIR/${Expname}-$ant.tlan ]
+    if {[ISESR]} {
+	append Expfiles " $XDIR/${Expname}_${Site}b.par"
+    }
+    if {[ISESR]} {
+	append Expfiles " $TXFRQ"
+	if { $32p == 1 } {
+		set Corrfilep $XDIR/${Expname}-p.fil
+		set Filterp $XDIR/w300d10.fir	;# +-300 kHz filter for 1 usec sampling
+		set NCOP1 $XDIR/ch1_${Expname}-p.nco
+		set NCOP2 $XDIR/ch5_${Expname}-p.nco
+		append Expfiles " $XDIR/${Expname}_pb.par $Corrfilep $Filterp $NCOP1 $NCOP2"
+	}
+    }
+
+    #############
+    # Actual work
+    #############
+    # Get all different scan patterns online
+    source ${SCAN_FILE}
+
+    # Stop receiver --
+    SYNC -10
+    stopradar -rec
+    if {[ISUHF]||[ISVHF]||[ISESR]} {
+	if {$ttx=="0"} {stopradar -trans}
+    }
+    if {[ISESR]} {
+	stopradar -pla
+	stopdata pla
+    }
+    stopdata
+
+    # Load radar controller --
+    if {[ISESR]} {
+	loadradar rec -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${ant}_ionesr.rbin -prog1 0
+	if {$ttx=="0"} {
+	loadradar trans -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${ant}_esr.tbin -prog1 0
+	}
+	loadexciter $TXFRQ
+	if { $32p == 1 } {
+		loadradar pla -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-32m_plasmaesr.rbin -prog1 0
+	}
+    } else {
+	loadradar rec -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.rbin -prog1 0
+	if {[ISUHF]||[ISVHF]} {
+	    if {$ttx=="0"} {
+	    loadradar trans -loopc $Loopc -sync $Sync -file $XDIR/${Expname}-${Site}_$RADAR.tbin -prog1 0
+	    }
+    }	}
+
+    # Load filters --
+    loadfilter $Filter1 ch1,2,4,5
+
+    # Set frequencies --
+    if {[ISESR]} {
+	loadfrequency $NCO1 ch1,2
+    } else {
+	loadfrequency -u $NCO1 ch1,2,4,5
+    }
+
+    # Make initial load of frequencies
+    setfrequency ch1,2,4,5 12.0
+    if { [ISESR] && $32p == 1 } {
+	loadfilter pla $Filterp ch1,4,5
+	loadfrequency pla $NCOP1 ch1,4
+	loadfrequency pla $NCOP2 ch5
+	setfrequency pla ch1,4,5 8.0
+    }
+
+    # Start radar controllers --
+    SYNC 2
+    armradar rec -prog1
+    if {[ISUHF]||[ISVHF]||[ISESR]} {
+	armradar trans -prog1
+    }
+    if { [ISESR] && $32p == 1 } {
+	armradar pla -prog1
+    }
+
+    startradar EXPSTART $Iper_s
+
+    # Start data access -----------------------------------------------
+    SYNC 4
+    upar 15 $Version	;#Set exp version into upar 15 (d_parbl(58))
+	
+    if {[ISESR]} {
+	startdata ion $Corrfile $Expid $Iper_us $ant
+	if { $32p == 1 } {
+		startdata pla $Corrfilep $Expid $Iper_us 32p
+	}
+    } else {
+	startdata $Corrfile $Expid $Iper_us
+    }
+    upar 1 [expr -($Loopc/4)]	;# Set initital notch filter width
+
+    # Write all experiment related files to the data directory 
+    writeexperimentfile $Expfiles
+    SYNC 4
+    disablerecording
+
+    # Infinite scanning loop
+
+    set ExpStart [timestamp [getstarttime exp]]   
+    if {[ISESR]} {
+	callblock ${SCAN_PAT}_pattern $Iper_s
+    } else {
+	gotoblock ${SCAN_PAT} $ExpStart $Expname $Height
+    }
+
+    # Ensure that we will not fall out of this proc
+    DO -1 { SYNC 100 }
+
+};#manda
+eval callblock manda [argv]

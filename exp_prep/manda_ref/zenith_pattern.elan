@@ -1,0 +1,14 @@
+BLOCK zenith { Expname height } {
+    set Azim 184.0
+    set Elev 90.0
+    set Height $height
+    changersite TROMSO
+    pointrheight $Azim $Elev $Height
+    setpolariser
+    DISP " In BLOCK $Expname"
+    DO -1 {
+        DISP "[TimeStamp now -noyear] -- $Expname running scan zenith"
+        SYNC 60
+    }    
+}
+
