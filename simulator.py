@@ -13,11 +13,12 @@ rx_per_pulse = 2*len(g)  # number of rx samples per pulse
 n_code_tx = 40  # number of full code transmissions (number of pulses in units of len(c))
 gen_method = "correlated_symmetric"  # simulate correlation between neighbouring range gates
 mode = "spread"
+method = "hybrid"
 
 
 print("writing info file")
 name = f"sim_res/sim_{time.time()}"
-info = {"N": N, "M": M, "c": c, "g": g, "gen_method": gen_method,
+info = {"N": N, "M": M, "c": c, "g": g, "gen_method": gen_method, "method": method,
         "mode": mode, "rx_per_pulse": rx_per_pulse, "n_code_tx": n_code_tx}
 with open(f"{name}.json", 'w') as inf_file:
     json.dump(info, inf_file, indent=4)
