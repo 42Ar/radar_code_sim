@@ -60,7 +60,7 @@ if len(c) <= max_fisher_size:
 
 
 colors = ["green", "brown", "blue", "orange", "grey", "darkblue"]
-lower_bound = sum(acf[0] for acf in acfs)/np.sqrt(w)
+lower_bound = np.sqrt(sum(acf[0] for acf in acfs)**2/(2*w) + sum(acf[1:M+1] for acf in acfs)/(2*w))
 lw=1
 show_h = [0, 1]
 for h, (m, s, color) in enumerate(zip(mean, std, colors)):
@@ -76,13 +76,14 @@ for h, (m, s, color) in enumerate(zip(mean, std, colors)):
 plt.xlabel("lag index")
 plt.ylabel("standard deviation of power in a.u.")
 legend_elements = [Line2D([0], [0], color=c, lw=lw, label=f'h={h}') for h, c in enumerate(colors) if h in show_h and h in range(N)]
-limit = plt.axhline(lower_bound/np.sqrt(samples), lw=lw, label="infinite\nrandom\ncode", color="grey")
-legend_elements.append(limit)
+limit = plt.plot(x, lower_bound/np.sqrt(samples), lw=lw, label="infinite\nrandom\ncode", color="grey", marker="X", ls=":", zorder=-1000)
+legend_elements.append(limit[0])
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="-", marker="x", label='Monte-Carlo'))
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="--", marker="o", label='Cramér–Rao'))
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="-.", marker="^", label='Analytical'))
 plt.gca().legend(handles=legend_elements, loc='right')
 plt.xticks(range(1, M+1), [f" {i}" for i in range(1, M+1)])
+plt.grid()
 plt.savefig("code_normal_case.pdf", bbox_inches='tight')
 plt.show()
 
