@@ -5,7 +5,7 @@ from config import N, n, cc, M, samples, w, off, c, code, max_fisher_size, mode,
 from scipy.stats import shapiro
 from matplotlib.lines import Line2D
 from analyze_barker_modulation.decoder import decode
-from theo import fisher_matrix, theo_cov_with_cutoff
+from theo import fisher_matrix, theo_cov_with_cutoff, theo_cov_matrix_with_cutoff, theo_var_approx
 from scipy import linalg
 from scipy.stats import pearsonr
 
@@ -60,7 +60,6 @@ if len(c) <= max_fisher_size:
 
 
 colors = ["green", "brown", "blue", "orange", "grey", "darkblue"]
-lower_bound = np.sqrt(sum(acf[0] for acf in acfs)**2/(2*w) + sum(acf[1:M+1] for acf in acfs)/(2*w))
 lw=1
 show_h = [0, 1]
 for h, (m, s, color) in enumerate(zip(mean, std, colors)):
@@ -70,14 +69,16 @@ for h, (m, s, color) in enumerate(zip(mean, std, colors)):
     theo_vars = np.array([theo_cov_with_cutoff(h, c, w, Delta, Delta, K, N, acfs) for Delta in range(1, M + 1)])
     theo_sig = np.sqrt(theo_vars/samples)
     plt.plot(x, theo_sig, ls="-.", color=color, marker="^")
+    theo_vars_approx = theo_var_approx(h, w, x, acfs, K)
+    theo_sig_approx = np.sqrt(theo_vars_approx/samples)
+    plt.plot(x, theo_sig_approx, ls=":", color=color, marker="X")
     if len(c) <= max_fisher_size:
         fisher_limit = [np.sqrt(F_inv[h*M + Delta - 1, h*M + Delta - 1]/samples) for Delta in range(1, M + 1)]
         plt.plot(x, fisher_limit, marker="o", ls="--", color=color, lw=lw)
 plt.xlabel("lag index")
 plt.ylabel("standard deviation of power in a.u.")
 legend_elements = [Line2D([0], [0], color=c, lw=lw, label=f'h={h}') for h, c in enumerate(colors) if h in show_h and h in range(N)]
-limit = plt.plot(x, lower_bound/np.sqrt(samples), lw=lw, label="infinite\nrandom\ncode", color="grey", marker="X", ls=":", zorder=-1000)
-legend_elements.append(limit[0])
+legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls=":", marker="X", label='Analytical Approx'))
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="-", marker="x", label='Monte-Carlo'))
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="--", marker="o", label='Cramér–Rao'))
 legend_elements.append(Line2D([0], [0], color=colors[show_h[0]], lw=lw, ls="-.", marker="^", label='Analytical'))
@@ -89,20 +90,14 @@ plt.show()
 
 #%%
 
-
-r_table = np.zeros((M, M))
-theo_table = np.zeros((M, M))
 h = 0
-theo_vars = np.array([theo_cov_with_cutoff(h, c, w, Delta, Delta, K, N, acfs) for Delta in range(1, M + 1)])
-
+theo_table = theo_cov_matrix_with_cutoff(h, c, w, K, N, acfs, M)
+r_table = np.zeros((M, M))
 for i in range(M - 1):
     for j in range(i + 1, M):
         r, p = pearsonr(np.real(sim_res[:, h, i]), np.real(sim_res[:, h, j]))
         r_table[i, j] = r
         r_table[j, i] = r
-        r_theo = theo_cov_with_cutoff(h, c, w, i + 1, j + 1, K, N, acfs)/np.sqrt(theo_vars[i]*theo_vars[j])
-        theo_table[i, j] = r_theo
-        theo_table[j, i] = r_theo
 for i in range(M):
     r_table[i, i] = np.nan
     theo_table[i, i] = np.nan
@@ -111,7 +106,7 @@ fig, axs = plt.subplots(1, 3)
 for ax, t in zip(axs, (r_table, theo_table)):
     img = ax.imshow(t, extent=(0.5, M + 0.5, 0.5, M + 0.5), vmin=0, vmax=1)
     plt.colorbar(img, ax=ax)
-img = axs[2].imshow(theo_table - r_table)
+img = axs[2].imshow(theo_table - r_table, interpolation="None")
 plt.colorbar(img, ax=axs[2])
 axs[0].set_title("correlations from simulation")
 axs[1].set_title("theoretical correlations")
