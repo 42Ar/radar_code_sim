@@ -29,7 +29,7 @@ def add_correlation(res_G_LL_UU, res_G_LU, res_G_UL, s1, s2, w1, w2, v, off_heig
 def calc_direct_deconv_point_spread(g, z):
     w = 0
     S = len(g)
-    shape= (2*S - 1, 2*S - 1)
+    shape = (2*S - 1, 2*S - 1)
     res_G_LL_UU = np.zeros(shape)  # this contains the no-overlap range gates
     res_G_UL = np.zeros(shape)  # UL - overlapping range gates
     res_G_LU = np.zeros(shape)  # LU - overlapping range gates
@@ -95,36 +95,35 @@ def do_plot(r, off_lag, off_height):
     return r
 
 
-g_barker_13 = [+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1]
-mod_17 = [+1, +1, +1, -1, -1, -1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, -1, +1, -1, -1, +1, -1]
 
-z = np.array([+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1])
-o = calc_direct_deconv_point_spread(g_barker_13, z)
-do_plot(*o)
-
-#%%
-
-def find_best_inverse(z, g):
-    (res_G_LL_UU, _), off_lag, off_height = calc_direct_deconv_point_spread(g, z)
-    chi2 = (np.sum(res_G_LL_UU[len(g)-1]) - len(g)**2)**2 + np.max(np.max(res_G_LL_UU**4, axis=1)[:len(g)-1])
-    print(chi2, z)
-    return chi2
-
-from scipy.optimize import minimize
-
-res = minimize(find_best_inverse, g_barker_13, (g_barker_13))
-
-#%%
-o = calc_direct_deconv_point_spread(g_barker_13, res.x)
-do_plot(*o)
-
-
-#%%
-
-o = calc_after_decode_point_spread([-1, -1]*5)
-do_plot(*o)
-
-
-
-
+if __name__ == "__main__":
+    
+    g_barker_13 = [+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1]
+    mod_17 = [+1, +1, +1, -1, -1, -1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, +1, -1, +1, +1, -1, +1, -1, -1, +1, -1]
+    
+    z = np.array([+1, +1, +1, +1, +1, -1, -1, +1, +1, -1, +1, -1, +1])
+    o = calc_direct_deconv_point_spread(g_barker_13, z)
+    do_plot(*o)
+    
+    #%%
+    
+    def find_best_inverse(z, g):
+        (res_G_LL_UU, _), off_lag, off_height = calc_direct_deconv_point_spread(g, z)
+        chi2 = (np.sum(res_G_LL_UU[len(g)-1]) - len(g)**2)**2 + np.max(np.max(res_G_LL_UU**4, axis=1)[:len(g)-1])
+        print(chi2, z)
+        return chi2
+    
+    from scipy.optimize import minimize
+    
+    res = minimize(find_best_inverse, g_barker_13, (g_barker_13))
+    
+    #%%
+    o = calc_direct_deconv_point_spread(g_barker_13, res.x)
+    do_plot(*o)
+    
+    
+    #%%
+    
+    o = calc_after_decode_point_spread([-1, -1]*5)
+    do_plot(*o)
 
