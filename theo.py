@@ -45,6 +45,9 @@ def fisher_matrix(c, acfs, N, M, w):
 
 def theo_cov_explicit(h, c, w, Delta1, Delta2, N, acfs):
     assert w%len(c) == 0
+    assert len(acfs) == N
+    assert Delta1 > 0 and Delta2 > 0
+    assert h >= 0 and h < N
     cc = lambda i: c[i%len(c)]
     res = 0
     for k1 in range(N):
@@ -62,6 +65,10 @@ def theo_cov_explicit(h, c, w, Delta1, Delta2, N, acfs):
 
 def theo_cov(h, c, w, Delta1, Delta2, N, acfs):
     assert w%len(c) == 0
+    assert len(acfs) == N
+    assert Delta1 > 0 and Delta2 > 0
+    assert h >= 0 and h < N
+    assert all(len(acf) >= w + max(Delta1, Delta2) for acf in acfs)
     c = np.array(c)
     def eps_hat(Delta, l1, l2):
         return np.tile(c*np.roll(c, -Delta)*np.roll(c, -h + l2)*np.roll(c, -Delta - h + l1), w//len(c))
@@ -86,11 +93,27 @@ def theo_cov(h, c, w, Delta1, Delta2, N, acfs):
     return res/(2*w**2)
 
 def theo_cov_with_cutoff(h, c, w, Delta1, Delta2, cutoff, N, acfs):
-    assert w%len(c) == 0
-    segment_size = len(c)*((cutoff + 2*len(c))//len(c))
+    assert cutoff > 0
+    segment_size = len(c)*((cutoff + max(Delta1, Delta2) + 2*len(c))//len(c))
     if w > segment_size:
         seg_val = segment_size**2*theo_cov(h, c, segment_size, Delta1, Delta2, N, acfs)
         sub_seg_val = (segment_size - len(c))**2*theo_cov(h, c, segment_size - len(c), Delta1, Delta2, N, acfs)
         return ((seg_val - sub_seg_val)*((w - segment_size)//len(c) + 1) + sub_seg_val)/w**2
     else:
         return theo_cov(h, c, w, Delta1, Delta2, N, acfs)
+
+def theo_var_approx(h, w, Delta, acfs, cutoff):
+    A = sum(acf[0] for acf in acfs)**2/(2*w)
+    B = sum(acf[Delta]**2 for acf in acfs)/(2*w)
+    C = sum((w - k)*(acfs[h][k]**2 + acfs[h][k + Delta]*acfs[h][np.abs(-k + Delta)]) for k in range(1, cutoff))/w**2
+    return A + B + C
+
+def theo_cov_matrix_with_cutoff(h, c, w, cutoff, N, acfs, M):
+    res = np.zeros((M, M))
+    for i in range(M):
+        res[i, i] = theo_cov_with_cutoff(h, c, w, i + 1, i + 1, cutoff, N, acfs)
+    for i in range(M - 1):
+        for j in range(i + 1, M):
+            res[i, j] = theo_cov_with_cutoff(h, c, w, i + 1, j + 1, cutoff, N, acfs)/np.sqrt(res[i, i]*res[j, j])
+            res[j, i] = res[i, j]
+    return res
