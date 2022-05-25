@@ -1,0 +1,115 @@
+nr_stc=1;
+% Calibration channel
+channel=2;
+% TRX
+type=0;
+	vec_len=138;
+	sub_vec_len=128;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=2;
+	nr_rep=2;
+	nr_loops=128;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=1;
+	vec_len=276;
+	sub_vec_len=10;
+	sub_data_start=266;
+	nr_loops=64;
+	max_lag=0;
+	data_start=0;
+end_type
+type=1;
+	vec_len=276;
+	sub_vec_len=10;
+	sub_data_start=128;
+	nr_loops=64;
+	max_lag=0;
+	data_start=0;
+end_type
+end_chan
+% Signal channel
+channel=1;
+type=0;
+	vec_len=120576;
+	sub_vec_len=120576;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=25;
+	nr_rep=25;
+	nr_loops=1;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=6;
+	vec_len=120576;
+	data_start=0;
+	nr_rep=25;
+	send_raw=1;
+	user_lib_name=plwin;
+	user_subr_name=decoder_6;
+	nr_out_points=101232;
+	dpar_len=7832;
+	fpar_len=0;
+	par_file=manda_va.par;
+end_type
+end_chan
+% Calibration channel
+channel=5;
+% TRX
+type=0;
+	vec_len=138;
+	sub_vec_len=128;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=2;
+	nr_rep=2;
+	nr_loops=128;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=1;
+	vec_len=276;
+	sub_vec_len=10;
+	sub_data_start=266;
+	nr_loops=64;
+	max_lag=0;
+	data_start=0;
+end_type
+type=1;
+	vec_len=276;
+	sub_vec_len=10;
+	sub_data_start=128;
+	nr_loops=64;
+	max_lag=0;
+	data_start=0;
+end_type
+end_chan
+% Signal channel
+channel=4;
+type=0;
+	vec_len=120576;
+	sub_vec_len=120576;
+	data_start=0;
+	sub_data_start=0;
+	res_mult=25;
+	nr_rep=25;
+	nr_loops=1;
+	send_raw=1;
+	raw_short=1;
+end_type
+type=6;
+	vec_len=120576;
+	data_start=0;
+	nr_rep=25;
+	send_raw=1;
+	user_lib_name=plwin;
+	user_subr_name=decoder_6;
+	nr_out_points=101232;
+	dpar_len=7832;
+	fpar_len=0;
+	par_file=manda_va.par;
+end_type
+end_chan
