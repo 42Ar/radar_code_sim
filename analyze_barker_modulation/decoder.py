@@ -3,16 +3,23 @@
 import numpy as np
 import scipy.linalg as linalg
 
+
+def filter_sub_pulse(m, g):
+    return np.array([np.correlate(rxdata, g, mode="valid") for rxdata in m])
+
+
 def decode(m, off, w, c, N, M):
     assert m.ndim == 2
+    assert w > 0 and off >= 0 and N > 0 and M > 0
     assert w % len(c) == 0  # this must hold for the cancellation property to be fullfilled
+    assert m.shape[0] >= off + w + N + M - 1
     cc = np.tile(c, m.shape[0]//len(c) + 1)
     res = np.zeros((N, M, m.shape[1]), dtype=np.complex128)
     for h in range(N):
         d1 = m[off + h:off + h + w]*cc[off:off + w, np.newaxis]
         for Delta in range(1, M + 1):
             d2 = m[off + h + Delta:off + h + Delta + w]*cc[off + Delta:off + Delta + w, np.newaxis]
-            res[h, Delta - 1] += np.mean(np.conj(d2)*d1, axis=0)
+            res[h, Delta - 1] = np.mean(np.conj(d2)*d1, axis=0)
     return res
 
 

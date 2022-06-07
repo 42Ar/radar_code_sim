@@ -11,6 +11,7 @@ def pad_acf(acf, length):
     r[:len(acf)] = acf
     return r
 
+
 def fisher(k_i, k_j, Delta_i, Delta_j, c, sigma_inv, M, w):
     eps_i = np.roll(c, k_i)*np.roll(c, k_i - Delta_i)
     eps_j = np.roll(c, k_j)*np.roll(c, k_j - Delta_j)
@@ -22,6 +23,7 @@ def fisher(k_i, k_j, Delta_i, Delta_j, c, sigma_inv, M, w):
     b = np.sum(eps_LL[:,:-M]*sigma_inv[len(c):2*len(c), 2*len(c):3*len(c)-M]*
                sigma_inv[len(c)+Delta_i:2*len(c)+Delta_i, 2*len(c)+Delta_j:3*len(c)+Delta_j - M])
     return (a + 2*b)*w/len(c)/2
+
 
 def fisher_matrix(c, acfs, N, M, w):
     sigma = np.sum([np.outer(np.roll(np.tile(c, 3), k), np.roll(np.tile(c, 3), k))*linalg.toeplitz(pad_acf(acf, 3*len(c)))
@@ -43,6 +45,7 @@ def fisher_matrix(c, acfs, N, M, w):
                         F[p1, p2] = F[p2, p1]
     return F
 
+
 def theo_cov_explicit(h, c, w, Delta1, Delta2, N, acfs):
     assert w%len(c) == 0
     assert len(acfs) == N
@@ -63,12 +66,13 @@ def theo_cov_explicit(h, c, w, Delta1, Delta2, N, acfs):
                     res += A + B
     return res/(2*w**2)
 
+
 def theo_cov(h, c, w, Delta1, Delta2, N, acfs):
     assert w%len(c) == 0
     assert len(acfs) == N
     assert Delta1 > 0 and Delta2 > 0
     assert h >= 0 and h < N
-    assert all(len(acf) >= w + max(Delta1, Delta2) for acf in acfs)
+    assert all(len(acf) >= w + max(Delta1, Delta2) for acf in acfs), f"where w={w}"
     c = np.array(c)
     def eps_hat(Delta, l1, l2):
         return np.tile(c*np.roll(c, -Delta)*np.roll(c, -h + l2)*np.roll(c, -Delta - h + l1), w//len(c))
@@ -92,6 +96,7 @@ def theo_cov(h, c, w, Delta1, Delta2, N, acfs):
             res += A + B
     return res/(2*w**2)
 
+
 def theo_cov_with_cutoff(h, c, w, Delta1, Delta2, cutoff, N, acfs):
     assert cutoff > 0
     segment_size = len(c)*((cutoff + max(Delta1, Delta2) + 2*len(c))//len(c))
@@ -102,18 +107,18 @@ def theo_cov_with_cutoff(h, c, w, Delta1, Delta2, cutoff, N, acfs):
     else:
         return theo_cov(h, c, w, Delta1, Delta2, N, acfs)
 
+
 def theo_var_approx(h, w, Delta, acfs, cutoff):
     A = sum(acf[0] for acf in acfs)**2/(2*w)
     B = sum(acf[Delta]**2 for acf in acfs)/(2*w)
     C = sum((w - k)*(acfs[h][k]**2 + acfs[h][k + Delta]*acfs[h][np.abs(-k + Delta)]) for k in range(1, cutoff))/w**2
     return A + B + C
 
+
 def theo_cov_matrix_with_cutoff(h, c, w, cutoff, N, acfs, M):
     res = np.zeros((M, M))
     for i in range(M):
-        res[i, i] = theo_cov_with_cutoff(h, c, w, i + 1, i + 1, cutoff, N, acfs)
-    for i in range(M - 1):
-        for j in range(i + 1, M):
-            res[i, j] = theo_cov_with_cutoff(h, c, w, i + 1, j + 1, cutoff, N, acfs)/np.sqrt(res[i, i]*res[j, j])
+        for j in range(i, M):
+            res[i, j] = theo_cov_with_cutoff(h, c, w, i + 1, j + 1, cutoff, N, acfs)
             res[j, i] = res[i, j]
     return res
